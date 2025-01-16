@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SP개발3팀 회식 조추첨</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>SP개발3팀 회식 조추첨</h1>
+        <p>흥미로운 회식을 위한 조추첨</p>
+
+        <div id="port-inputs">
+            <h2>Enter Participants for Each Port</h2>
+            <div class="port" id="port1">
+                <h3>Port 1</h3>
+                <textarea placeholder="이름 입력 (한줄에 한명)"></textarea>
+            </div>
+            <div class="port" id="port2">
+                <h3>Port 2</h3>
+                <textarea placeholder="이름 입력 (한줄에 한명)"></textarea>
+            </div>
+            <div class="port" id="port3">
+                <h3>Port 3</h3>
+                <textarea placeholder="이름 입력 (한줄에 한명)"></textarea>
+            </div>
+            <div class="port" id="port4">
+                <h3>Port 4</h3>
+                <textarea placeholder="이름 입력 (한줄에 한명)"></textarea>
+            </div>
+        </div>
+
+        <button id="generate-button">팀 생성하기!</button>
+
+        <h2>Result</h2>
+        <div id="result">
+            <p>No teams generated yet.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
