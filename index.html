@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draw Simulation</title>
-    <link rel="stylesheet" href="style.css">
+    <title>회식 조편성</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -34,6 +33,32 @@
             color: #34495e;
         }
 
+        #name-list {
+            padding: 20px;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .name {
+            padding: 5px;
+            background: #3498db;
+            color: white;
+            text-align: center;
+            border-radius: 3px;
+            cursor: grab;
+            user-select: none;
+            font-size: 14px;
+        }
+
+        .name.dragging {
+            opacity: 0.5;
+        }
+
         #port-inputs {
             display: flex;
             justify-content: space-between;
@@ -47,21 +72,17 @@
             min-width: 200px;
         }
 
-        .port textarea {
-            width: 100%;
-            height: 120px;
-            resize: none;
+        .dropzone {
+            min-height: 50px;
             padding: 10px;
-            border: 1px solid #bdc3c7;
+            background: #ecf0f1;
+            border: 1px dashed #bdc3c7;
             border-radius: 5px;
-            font-size: 14px;
-            background-color: #ecf0f1;
-            transition: border-color 0.3s;
+            transition: background-color 0.3s;
         }
 
-        .port textarea:focus {
-            border-color: #3498db;
-            outline: none;
+        .dropzone:hover {
+            background-color: #dff9fb;
         }
 
         .port h3 {
@@ -105,20 +126,6 @@
             font-size: 16px;
             font-weight: bold;
             color: #2c3e50;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.5s forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         footer {
@@ -127,38 +134,55 @@
             color: #95a5a6;
             font-size: 14px;
         }
-
     </style>
 </head>
 <body>
     <div class="container">
         <h1>SP개발3팀 회식 테이블 편성</h1>
-        <p>포트별로 이름을 입력하고 "팀 생성하기"를 클릭하세요.</p>
+        <p>참가자를 드래그하여 각 포트에 배치하세요.</p>
+
+        <div id="name-list">
+            <div class="name" draggable="true">함형길</div>
+            <div class="name" draggable="true">윤용호</div>
+            <div class="name" draggable="true">이호섭</div>
+            <div class="name" draggable="true">조인겸</div>
+            <div class="name" draggable="true">임종환</div>
+            <div class="name" draggable="true">이준규</div>
+            <div class="name" draggable="true">이건형</div>
+            <div class="name" draggable="true">서정록</div>
+            <div class="name" draggable="true">공지상</div>
+            <div class="name" draggable="true">이주영</div>
+            <div class="name" draggable="true">지완</div>
+            <div class="name" draggable="true">차원석</div>
+            <div class="name" draggable="true">이윤재</div>
+            <div class="name" draggable="true">양유경</div>
+            <div class="name" draggable="true">고수완</div>
+            <div class="name" draggable="true">김진영</div>
+        </div>
 
         <div id="port-inputs">
             <div class="port" id="port1">
                 <h3>포트 1</h3>
-                <textarea placeholder="이름 입력 (한 줄에 한 명)"></textarea>
+                <div class="dropzone"></div>
             </div>
             <div class="port" id="port2">
                 <h3>포트 2</h3>
-                <textarea placeholder="이름 입력 (한 줄에 한 명)"></textarea>
+                <div class="dropzone"></div>
             </div>
             <div class="port" id="port3">
                 <h3>포트 3</h3>
-                <textarea placeholder="이름 입력 (한 줄에 한 명)"></textarea>
+                <div class="dropzone"></div>
             </div>
             <div class="port" id="port4">
                 <h3>포트 4</h3>
-                <textarea placeholder="이름 입력 (한 줄에 한 명)"></textarea>
+                <div class="dropzone"></div>
             </div>
         </div>
 
         <button id="generate-button">팀 생성하기</button>
 
         <h2>결과</h2>
-        <div id="result">
-        </div>
+        <div id="result"></div>
 
         <footer>
             © 2025 SP개발3팀.
@@ -166,28 +190,54 @@
     </div>
 
     <script>
+        const names = document.querySelectorAll('.name');
+        const dropzones = document.querySelectorAll('.dropzone');
+
+        // 드래그 시작 이벤트
+        names.forEach(name => {
+            name.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', e.target.textContent);
+                e.target.classList.add('dragging');
+            });
+
+            name.addEventListener('dragend', (e) => {
+                e.target.classList.remove('dragging');
+            });
+        });
+
+        // 드롭존 이벤트
+        dropzones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.style.backgroundColor = '#dff9fb';
+            });
+
+            zone.addEventListener('dragleave', (e) => {
+                zone.style.backgroundColor = '#ecf0f1';
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.style.backgroundColor = '#ecf0f1';
+
+                const droppedName = e.dataTransfer.getData('text/plain');
+                const draggedElement = Array.from(names).find(name => name.textContent === droppedName);
+
+                if (draggedElement) {
+                    zone.appendChild(draggedElement);
+                }
+            });
+        });
+
         document.getElementById('generate-button').addEventListener('click', function() {
-            const ports = Array.from(document.querySelectorAll('#port-inputs .port textarea'));
-            const participants = ports.map(port => port.value.split('\n').filter(name => name.trim() !== ''));
-
-            const minSize = Math.min(...participants.map(group => group.length));
-
-            if (minSize === 0) {
-                document.getElementById('result').innerHTML = '<p>Each port must have at least one participant.</p>';
-                return;
-            }
-
-            const teams = [];
-            for (let i = 0; i < minSize; i++) {
-                const team = participants.map(group => {
-                    const randomIndex = Math.floor(Math.random() * group.length);
-                    return group.splice(randomIndex, 1)[0];
-                });
-                teams.push(team);
-            }
+            const ports = document.querySelectorAll('.dropzone');
+            const teams = Array.from(ports).map(port => {
+                return Array.from(port.children).map(child => child.textContent);
+            });
 
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = '';
+
             teams.forEach((team, index) => {
                 const teamDiv = document.createElement('div');
                 teamDiv.classList.add('team');

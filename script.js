@@ -1,29 +1,30 @@
-document.getElementById('generate-button').addEventListener('click', function() {
-    const ports = Array.from(document.querySelectorAll('#port-inputs .port textarea'));
-    const participants = ports.map(port => port.value.split('\\n').filter(name => name.trim() !== ''));
+const names = document.querySelectorAll('.name');
+const dropzones = document.querySelectorAll('.dropzone');
 
-    const minSize = Math.min(...participants.map(group => group.length));
+names.forEach(name => {
+    name.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', e.target.textContent);
+    });
+});
 
-    if (minSize === 0) {
-        document.getElementById('result').innerHTML = '<p>Each port must have at least one participant.</p>';
-        return;
-    }
+dropzones.forEach(zone => {
+    zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zone.style.backgroundColor = '#dff9fb';
+    });
 
-    const teams = [];
-    for (let i = 0; i < minSize; i++) {
-        const team = participants.map(group => {
-            const randomIndex = Math.floor(Math.random() * group.length);
-            return group.splice(randomIndex, 1)[0];
-        });
-        teams.push(team);
-    }
+    zone.addEventListener('dragleave', (e) => {
+        zone.style.backgroundColor = '#ecf0f1';
+    });
 
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = '';
-    teams.forEach((team, index) => {
-        const teamDiv = document.createElement('div');
-        teamDiv.classList.add('team');
-        teamDiv.textContent = `Team ${index + 1}: ${team.join(', ')}`;
-        resultDiv.appendChild(teamDiv);
+    zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.style.backgroundColor = '#ecf0f1';
+        const droppedName = e.dataTransfer.getData('text/plain');
+        const nameDiv = document.querySelector(`.name:contains("${droppedName}")`);
+        if (nameDiv) {
+            zone.appendChild(nameDiv.cloneNode(true));
+            nameDiv.remove();
+        }
     });
 });
