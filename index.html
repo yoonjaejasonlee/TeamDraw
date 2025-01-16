@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SP개발3팀 회식</title>
+    <title>SP개발3팀</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -135,6 +135,18 @@
             color: #2c3e50;
         }
 
+        #countdown {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            font-weight: bold;
+            color: red;
+            display: none;
+            z-index: 1000;
+        }
+
         footer {
             margin-top: 40px;
             text-align: center;
@@ -194,6 +206,8 @@
         <h2>결과</h2>
         <div id="result"></div>
 
+        <div id="countdown">3</div>
+
         <footer>
             © 2025 SP개발3팀.
         </footer>
@@ -203,6 +217,7 @@
         const names = document.querySelectorAll('.name');
         const dropzones = document.querySelectorAll('.dropzone');
         const nameList = document.getElementById('name-list');
+        const countdownDiv = document.getElementById('countdown');
 
         // 드래그 시작 이벤트
         names.forEach(name => {
@@ -253,24 +268,38 @@
                 return;
             }
 
-            const teams = [];
-            for (let i = 0; i < minSize; i++) {
-                const team = participants.map(port => {
-                    const randomIndex = Math.floor(Math.random() * port.length);
-                    return port.splice(randomIndex, 1)[0];
-                });
-                teams.push(team);
-            }
+            let countdown = 3;
+            countdownDiv.textContent = countdown;
+            countdownDiv.style.display = 'block';
 
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '';
+            const countdownInterval = setInterval(() => {
+                countdown -= 1;
+                if (countdown === 0) {
+                    clearInterval(countdownInterval);
+                    countdownDiv.style.display = 'none';
 
-            teams.forEach((team, index) => {
-                const teamDiv = document.createElement('div');
-                teamDiv.classList.add('team');
-                teamDiv.textContent = `Team ${index + 1}: ${team.join(', ')}`;
-                resultDiv.appendChild(teamDiv);
-            });
+                    const teams = [];
+                    for (let i = 0; i < minSize; i++) {
+                        const team = participants.map(port => {
+                            const randomIndex = Math.floor(Math.random() * port.length);
+                            return port.splice(randomIndex, 1)[0];
+                        });
+                        teams.push(team);
+                    }
+
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = '';
+
+                    teams.forEach((team, index) => {
+                        const teamDiv = document.createElement('div');
+                        teamDiv.classList.add('team');
+                        teamDiv.textContent = `Team ${index + 1}: ${team.join(', ')}`;
+                        resultDiv.appendChild(teamDiv);
+                    });
+                } else {
+                    countdownDiv.textContent = countdown;
+                }
+            }, 1000);
         });
 
         document.getElementById('reset-button').addEventListener('click', function() {
