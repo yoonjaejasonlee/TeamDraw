@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draw Simulation</title>
+    <title>SP개발3팀 회식</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -73,12 +73,15 @@
         }
 
         .dropzone {
-            min-height: 50px;
+            min-height: 100px;
             padding: 10px;
             background: #ecf0f1;
             border: 1px dashed #bdc3c7;
             border-radius: 5px;
             transition: background-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         .dropzone:hover {
@@ -91,9 +94,13 @@
             margin-bottom: 10px;
         }
 
-        #generate-button {
-            display: block;
-            margin: 0 auto;
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button {
             padding: 12px 25px;
             font-size: 16px;
             font-weight: bold;
@@ -105,7 +112,7 @@
             transition: background-color 0.3s;
         }
 
-        #generate-button:hover {
+        button:hover {
             background-color: #2980b9;
         }
 
@@ -179,7 +186,10 @@
             </div>
         </div>
 
-        <button id="generate-button">팀 생성하기</button>
+        <div class="buttons">
+            <button id="generate-button">팀 생성하기</button>
+            <button id="reset-button">리셋</button>
+        </div>
 
         <h2>결과</h2>
         <div id="result"></div>
@@ -192,6 +202,7 @@
     <script>
         const names = document.querySelectorAll('.name');
         const dropzones = document.querySelectorAll('.dropzone');
+        const nameList = document.getElementById('name-list');
 
         // 드래그 시작 이벤트
         names.forEach(name => {
@@ -230,38 +241,49 @@
         });
 
         document.getElementById('generate-button').addEventListener('click', function() {
-    const ports = document.querySelectorAll('.dropzone');
-    const participants = Array.from(ports).map(port => {
-        return Array.from(port.children).map(child => child.textContent);
-    });
+            const ports = document.querySelectorAll('.dropzone');
+            const participants = Array.from(ports).map(port => {
+                return Array.from(port.children).map(child => child.textContent);
+            });
 
-    const minSize = Math.min(...participants.map(port => port.length));
+            const minSize = Math.min(...participants.map(port => port.length));
 
-    if (minSize === 0) {
-        alert('각 포트에 최소 한 명 이상 배치해야 합니다.');
-        return;
-    }
+            if (minSize === 0) {
+                alert('각 포트에 최소 한 명 이상 배치해야 합니다.');
+                return;
+            }
 
-    const teams = [];
-    for (let i = 0; i < minSize; i++) {
-        const team = participants.map(port => {
-            const randomIndex = Math.floor(Math.random() * port.length);
-            return port.splice(randomIndex, 1)[0];
+            const teams = [];
+            for (let i = 0; i < minSize; i++) {
+                const team = participants.map(port => {
+                    const randomIndex = Math.floor(Math.random() * port.length);
+                    return port.splice(randomIndex, 1)[0];
+                });
+                teams.push(team);
+            }
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+
+            teams.forEach((team, index) => {
+                const teamDiv = document.createElement('div');
+                teamDiv.classList.add('team');
+                teamDiv.textContent = `Team ${index + 1}: ${team.join(', ')}`;
+                resultDiv.appendChild(teamDiv);
+            });
         });
-        teams.push(team);
-    }
 
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = '';
+        document.getElementById('reset-button').addEventListener('click', function() {
+            // 모든 드롭존 비우기
+            dropzones.forEach(zone => {
+                while (zone.firstChild) {
+                    nameList.appendChild(zone.firstChild);
+                }
+            });
 
-    teams.forEach((team, index) => {
-        const teamDiv = document.createElement('div');
-        teamDiv.classList.add('team');
-        teamDiv.textContent = `Team ${index + 1}: ${team.join(', ')}`;
-        resultDiv.appendChild(teamDiv);
-    });
-});
-
+            // 결과 초기화
+            document.getElementById('result').innerHTML = '';
+        });
     </script>
 </body>
 </html>
