@@ -3,42 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SP개발3팀 회식 조추첨</title>
+    <title>Draw Simulation</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        p {
+            text-align: center;
+            color: #34495e;
+        }
+
+        #port-inputs {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .port {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .port textarea {
+            width: 100%;
+            height: 120px;
+            resize: none;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #ecf0f1;
+            transition: border-color 0.3s;
+        }
+
+        .port textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .port h3 {
+            text-align: center;
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+
+        #generate-button {
+            display: block;
+            margin: 0 auto;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #generate-button:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+        }
+
+        .team {
+            margin-bottom: 10px;
+            padding: 15px;
+            background: #dff9fb;
+            border-left: 5px solid #3498db;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 14px;
+        }
+
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>SP개발3팀 회식 조추첨</h1>
-        <p>흥미로운 회식을 위한 조추첨</p>
+        <h1>SP개발3팀 회식 테이블 편성</h1>
+        <p>포트별로 이름을 입력하고 "팀 생성하기"를 클릭하세요.</p>
 
         <div id="port-inputs">
-            <h2>Enter Participants for Each Port</h2>
             <div class="port" id="port1">
-                <h3>Port 1</h3>
-                <textarea placeholder="이름 입력 (한줄에 한명)"></textarea>
+                <h3>포트 1</h3>
+                <textarea placeholder="이름 입력 (한 줄에 한 명)"></textarea>
             </div>
             <div class="port" id="port2">
-                <h3>Port 2</h3>
-                <textarea placeholder="이름 입력 (한줄에 한명)"></textarea>
+                <h3>포트 2</h3>
+                <textarea placeholder="이름 입력 (한 줄에 한 명)"></textarea>
             </div>
             <div class="port" id="port3">
-                <h3>Port 3</h3>
-                <textarea placeholder="이름 입력 (한줄에 한명)"></textarea>
+                <h3>포트 3</h3>
+                <textarea placeholder="이름 입력 (한 줄에 한 명)"></textarea>
             </div>
             <div class="port" id="port4">
-                <h3>Port 4</h3>
-                <textarea placeholder="이름 입력 (한줄에 한명)"></textarea>
+                <h3>포트 4</h3>
+                <textarea placeholder="이름 입력 (한 줄에 한 명)"></textarea>
             </div>
         </div>
 
-        <button id="generate-button">팀 생성하기!</button>
+        <button id="generate-button">팀 생성하기</button>
 
-        <h2>Result</h2>
+        <h2>결과</h2>
         <div id="result">
-            <p>No teams generated yet.</p>
         </div>
+
+        <footer>
+            © 2025 SP개발3팀.
+        </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        document.getElementById('generate-button').addEventListener('click', function() {
+            const ports = Array.from(document.querySelectorAll('#port-inputs .port textarea'));
+            const participants = ports.map(port => port.value.split('\n').filter(name => name.trim() !== ''));
+
+            const minSize = Math.min(...participants.map(group => group.length));
+
+            if (minSize === 0) {
+                document.getElementById('result').innerHTML = '<p>Each port must have at least one participant.</p>';
+                return;
+            }
+
+            const teams = [];
+            for (let i = 0; i < minSize; i++) {
+                const team = participants.map(group => {
+                    const randomIndex = Math.floor(Math.random() * group.length);
+                    return group.splice(randomIndex, 1)[0];
+                });
+                teams.push(team);
+            }
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+            teams.forEach((team, index) => {
+                const teamDiv = document.createElement('div');
+                teamDiv.classList.add('team');
+                teamDiv.textContent = `Team ${index + 1}: ${team.join(', ')}`;
+                resultDiv.appendChild(teamDiv);
+            });
+        });
+    </script>
 </body>
 </html>
